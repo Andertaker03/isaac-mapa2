@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mapa de los lugares de Isaac</title>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    body, html { margin: 0; padding: 0; height: 100%; display: flex; flex-direction: column; }
+    #header { padding: 16px; background: #f9f9f9; border-bottom: 1px solid #ddd; }
+    #isaac-info { padding: 16px; background: #fafafa; border-bottom: 1px solid #ddd; max-height: 200px; overflow-y: auto; }
+    #header h1, #isaac-info h2 { margin: 0 0 8px; }
+    #header p, #isaac-info p { margin: 4px 0; white-space: pre-wrap; }
+    #map { flex: 1; }
+  </style>
+</head>
+<body>
+  <!-- Encabezado general -->
+  <div id="header">
+    <h1>Mapa de los lugares en la vida de Isaac</h1>
+    <p>Este mapa muestra los principales eventos y ubicaciones mencionadas en la vida de Isaac según Génesis.</p>
+  </div>
+  <!-- Información de Isaac detallada -->
+  <div id="isaac-info">
+    <h2>2. ISAAC "risa" (2065 a.C.)</h2>
+    <p>Principal de su vida, sucedió en estos 5 lugares: En un monte, en un campo, en algunos pozos del desierto, en un hogar filisteo, y en UNA MESA DE COMER</p>
+    <p>
+2.1 Su nacimiento Gn.20:1;21:1-7 — Gerar<br>
+2.2 Su infancia Gn.21:22-34 — Berseba, Tierra de los filisteos<br>
+2.3 La ofrenda. Va con su Padre camino a 3 días a ofrecer sacrificio. Gn.22:2 — Monte Moria, cerca de Jerusalén<br>
+2.4 Regreso triunfante Gn.22:19 — Berseba<br>
+2.5 Eliécer, siervo de Abraham parte a conseguir mujer a Isaac. Gn.24:10 — Harán<br>
+<br>
+2.6 Toma a Rebeca por esposa y allí siguió siendo su habitación. Gn.24:62;25:11 — Junto al pozo del Viviente-que-me-ve en el Neguev<br>
+30 años después nacen Jacob y Esaú<br>
+2.7 La morada de Ismael. Su madre le tomó mujer de la tierra de Egipto. Gn.21:21;25:18 — Desde Havilá hasta Shur, frente a Egipto<br>
+2.8 Isaac repite el mismo pecado de su Padre. Gn.26:1-14 — Gerar<br>
+2.9 Se hizo poderoso y habitó en otro lugar; allí abrió los pozos que los filisteos habían cerrado. Gn.26:16-17 — Valle de Gerar<br>
+2.10 Dios reafirma su pacto, edificó un altar e invocó el nombre de Dios; hace pacto con Abimelec. Isaac imparte la bendición y Jacob la hurta. Gn.26:17-35;27 — Berseba<br>
+2.11 Su hijo Jacob lo visita y allí murió a los 180 años. Gn.35:27 — Mamre, la ciudad de Arba (Hebrón)
+    </p>
+  </div>
+
+  <!-- Contenedor del mapa -->
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Inicializar mapa
+    const map = L.map('map').setView([31.5, 35.0], 6);
+    // Capa base con nombres de países
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap contributors &copy; CartoDB'
+    }).addTo(map);
+    
+    // Datos de ubicaciones
+    const ubicaciones = [
+      { numero: '2.1', nombre: 'Gerar (Nacimiento)', coords: [31.405, 34.799], descripcion: 'Gn.20:1;21:1-7: Gerar, lugar de nacimiento.' },
+      { numero: '2.2', nombre: 'Berseba (Infancia)', coords: [31.252, 34.791], descripcion: 'Gn.21:22-34: Berseba, Tierra de los filisteos.' },
+      { numero: '2.3', nombre: 'Monte Moria (Ofrenda)', coords: [31.7767, 35.2345], descripcion: 'Gn.22:2: Monte Moria, cerca de Jerusalén.' },
+      { numero: '2.4', nombre: 'Berseba (Regreso)', coords: [31.252, 34.791], descripcion: 'Gn.22:19: Regreso triunfante.' },
+      { numero: '2.5', nombre: 'Harán (Búsqueda de esposa)', coords: [36.867, 39.021], descripcion: 'Gn.24:10: Harán.' },
+      { numero: '2.6', nombre: 'Pozo del Viviente-que-me-ve', coords: [31.261, 35.206], descripcion: 'Gn.24:62;25:11: Pozo del Viviente-que-me-ve.' },
+      { numero: '2.7', nombre: 'Havilá-Shur (Morada de Ismael)', coords: [29.0, 34.0], descripcion: 'Gn.21:21;25:18: Desde Havilá hasta Shur.' },
+      { numero: '2.8', nombre: 'Gerar (Pecado)', coords: [31.405, 34.799], descripcion: 'Gn.26:1-14: Isaac repite el pecado de su padre.' },
+      { numero: '2.9', nombre: 'Valle de Gerar (Pozos)', coords: [31.35, 34.8], descripcion: 'Gn.26:16-17: Apertura de pozos.' },
+      { numero: '2.10', nombre: 'Berseba (Altar y pacto)', coords: [31.252, 34.791], descripcion: 'Gn.26:17-35;27:1: Altar y pacto.' },
+      { numero: '2.11', nombre: 'Mamre (Hebrón)', coords: [31.533, 35.1], descripcion: 'Gn.35:27: Isaac muere a los 180 años.' }
+    ];
+    
+    // Agrupar por coordenadas y agregar marcadores
+    const grupos = {};
+    ubicaciones.forEach(site => {
+      const key = site.coords.toString();
+      if (!grupos[key]) grupos[key] = [];
+      grupos[key].push(site);
+    });
+    Object.values(grupos).forEach(lista => {
+      const { coords } = lista[0];
+      let contenido = '<strong>Eventos en este lugar:</strong><br><ul>';
+      lista.forEach(item => contenido += `<li>${item.numero} - ${item.nombre}: ${item.descripcion}</li>`);
+      contenido += '</ul>';
+      L.marker(coords).addTo(map).bindPopup(contenido);
+    });
+  </script>
+</body>
+</html>
